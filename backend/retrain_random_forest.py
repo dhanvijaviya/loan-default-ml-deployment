@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import csv
-import pickle
 from pathlib import Path
 
+import joblib
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
@@ -57,7 +57,7 @@ def load_training_matrix() -> tuple[np.ndarray, np.ndarray]:
             features.append(vec)
             target.append(int(row["Default"]))
 
-    return np.array(features, dtype=float), np.array(target, dtype=int)
+    return np.array(features, dtype=np.float32), np.array(target, dtype=np.int32)
 
 
 def main() -> None:
@@ -67,15 +67,18 @@ def main() -> None:
     x, y = load_training_matrix()
 
     model = RandomForestClassifier(
-        n_estimators=400,
+        n_estimators=120,
+        max_depth=12,
+        min_samples_leaf=5,
+        max_features="sqrt",
         random_state=42,
         n_jobs=-1,
         class_weight="balanced_subsample",
     )
     model.fit(x, y)
 
-    with MODEL_PATH.open("wb") as file:
-        pickle.dump(model, file)
+    # Use compressed serialization to keep model artifact size deploy-friendly.
+    joblib.dump(model, MODEL_PATH, compress=3)
 
     unique, counts = np.unique(y, return_counts=True)
     print(f"Saved model to {MODEL_PATH}")

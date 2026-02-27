@@ -4,6 +4,7 @@ import os
 import pickle
 from pathlib import Path
 
+import joblib
 import numpy as np
 from flask import Flask, jsonify, request
 
@@ -13,8 +14,8 @@ except ModuleNotFoundError:
     CORS = None
 
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_KEY = "gradient_boosting"
-MODEL_FILE = BASE_DIR / "loan_gradient_boosting.pkl"
+MODEL_KEY = "random_forest"
+MODEL_FILE = BASE_DIR / "loan_random_forest.pkl"
 DEFAULT_RISK_THRESHOLD = float(os.getenv("DEFAULT_RISK_THRESHOLD", "0.40"))
 
 NUMERIC_COLUMNS = [
@@ -53,8 +54,11 @@ if CORS is not None:
 
 MODEL = None
 if MODEL_FILE.exists():
-    with MODEL_FILE.open("rb") as file:
-        MODEL = pickle.load(file)
+    try:
+        MODEL = joblib.load(MODEL_FILE)
+    except Exception:
+        with MODEL_FILE.open("rb") as file:
+            MODEL = pickle.load(file)
 
 
 def _vector_from_payload(payload: dict) -> np.ndarray:
