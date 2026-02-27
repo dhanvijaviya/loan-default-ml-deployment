@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: loan-default-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn backend.app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: DEFAULT_RISK_THRESHOLD
+        value: 0.40
