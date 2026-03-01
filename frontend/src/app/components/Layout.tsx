@@ -141,7 +141,7 @@ export function Layout() {
               <Brain className="size-6 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold text-white">ML Classifier</h1>
+              <h1 className="font-semibold text-white">CreditGuard</h1>
               <p className="text-xs text-slate-400">Analytics Pro</p>
             </div>
           </div>
